@@ -20,23 +20,23 @@ class RoboClient(discord.Client):
             if msg_txt[0] == "/":
                 msg_txt = msg_txt[0] + " " + msg_txt[1:]
 
-            time_strs = re.findall(r"(?<=^|\W)(\d\d:\d\d)(?=\W|$)", msg_txt)
-            time_strs += re.findall(r"(?<=^|\W)(\d\d\d\d)(?=\W|$)", msg_txt)
+            time_strs = re.findall(r"(?:^|\W)(\d\d:?\d\d)(?=\W(?!am|pm|AM|PM)|\W$|$)", msg_txt)
             corrections = []
             for time_str_raw in time_strs:
                 time_str = time_str_raw
+                print(time_str)
                 if ":" not in time_str:
                     time_str = time_str[:2] + ":" + time_str[2:]
                 if len(time_str) != 5:
-                    #print("Found bad string: '{}'".format(time_str))
+                    print("Found bad string: '{}'".format(time_str))
                     continue
 
                 time_hr,time_min = map(int, time_str.split(":"))
                 if time_hr > 23 or time_hr < 0 or time_min > 59 or time_min < 0:
-                    #print("Found close but not real time: {}".format(time_str))
+                    print("Found close but not real time: {}".format(time_str))
                     continue
 
-                if ":" in time_str_raw and time_str[0] != "0":
+                if ":" in time_str_raw and time_str[0] != "0" and (time_hr <= 12):
                     continue
 
                 fmt_hr = str(time_hr - 12) if time_hr > 12 else (str(time_hr) if time_hr != 0 else "12")
@@ -48,7 +48,8 @@ class RoboClient(discord.Client):
             if len(corrections) > 0:
                 msg_trans = msg_txt
                 for (incorr, corr) in corrections:
-                    msg_trans = msg_trans.replace(incorr, corr)
+                    print(incorr, corr)
+                    msg_trans = re.sub(r"(?P<whitespace>^|\W)("+incorr+r")(?=\W(?!am|pm|AM|PM)|\W$|$)", r"\g<whitespace>"+corr, msg_trans)
                 await msg.reply("Translation:\n> " + msg_trans)
 
 intents = discord.Intents.default()
