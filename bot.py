@@ -20,7 +20,7 @@ class RoboClient(discord.Client):
             if msg_txt[0] == "/":
                 msg_txt = msg_txt[0] + " " + msg_txt[1:]
 
-            time_strs = re.findall("(\d+\d:?\d\d+)", msg_txt)
+            time_strs = re.findall(r"(?<=^|\W)(\d+\d:?\d\d+)(?=\W|$)", msg_txt)
             corrections = []
             for time_str_raw in time_strs:
                 time_str = time_str_raw
