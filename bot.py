@@ -3,6 +3,7 @@ import re
 
 with open("apikey.txt") as f:
     API_KEY = f.read().strip()
+    print(API_KEY)
 
 DO_24HR_CONVERSION = True
 
@@ -13,6 +14,9 @@ class RoboClient(discord.Client):
     async def on_message(self, msg):
         if msg.author == self.user:
             return
+
+        if msg.author.id == 483297157580062732:
+            await msg.add_reaction(r":bnyahaj:1157678527680892990")
 
         if DO_24HR_CONVERSION:
             msg_txt = msg.clean_content
@@ -43,7 +47,9 @@ class RoboClient(discord.Client):
                 fmt_min = "0" + str(time_min) if time_min < 10 else str(time_min)
                 fmt_ampm = "PM" if time_hr > 11 else "AM"
                 time_12hr = "{}:{} {}".format(fmt_hr, fmt_min, fmt_ampm)
-                corrections.append((time_str_raw, time_12hr))
+
+                if time_str_raw not in ["2016", "2017", "2018", "2019", "2021", "2022", "2023", "2024", "2025", "2026", "2027", "2028"]:
+                    corrections.append((time_str_raw, time_12hr))
 
             if len(corrections) > 0:
                 msg_trans = msg_txt
